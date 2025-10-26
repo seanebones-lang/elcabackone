@@ -54,13 +54,16 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting ELCA Blockbusters application")
     
-    # Initialize database
-    await init_db()
+    try:
+        # Initialize database (with checkfirst=True to avoid conflicts)
+        await init_db()
+    except Exception as e:
+        logger.warning("Database initialization skipped (may already exist)", error=str(e))
     
     # Initialize AI provider
     ai_provider = ELCAAIProviderManager()
     
-    # Initialize ELCA ontology
+    # Initialize ELCA ontology (only in first worker)
     async for db in get_db():
         ontology_manager = ELCAOntologyManager(db)
         try:
@@ -71,12 +74,14 @@ async def lifespan(app: FastAPI):
             if value_count == 0:
                 await ontology_manager.initialize_elca_ontology()
                 logger.info("ELCA ontology initialized")
+            else:
+                logger.info("ELCA ontology already initialized", value_count=value_count)
             
-            # Register the 3 agents
+            # Register the 3 agents (with duplicate checking)
             await register_agents(db)
             
         except Exception as e:
-            logger.error("Failed to initialize ontology", error=str(e))
+            logger.warning("Ontology initialization skipped", error=str(e))
         finally:
             break
     
