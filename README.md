@@ -337,7 +337,7 @@ See LICENSE file in repository.
 ## Support
 
 - **API Documentation:** http://localhost:8000/docs (interactive)
-- **Repository:** https://github.com/seanebones-lang/eclabackthree
+- **Repository:** https://github.com/seanebones-lang/elcabackone
 - **Frontend Repo:** https://github.com/seanebones-lang/eclathree
 - **Main Documentation:** See parent repo for deployment guides
 
